@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useSeo } from '../hooks/useSeo'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
@@ -13,6 +14,7 @@ import CtaBand from '../components/CtaBand'
 import TextReveal from '../components/TextReveal'
 import AnimatedSection from '../components/AnimatedSection'
 import ImageReveal from '../components/ImageReveal'
+import CountUp from '../components/CountUp'
 import { services } from '../data/services'
 import { projects } from '../data/projects'
 import { company, asset } from '../config/site'
@@ -20,6 +22,14 @@ import { easeOut, stagger } from '../motion/variants'
 
 export default function Home() {
   const reduced = usePrefersReducedMotion()
+  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, 52])
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, 40])
+  const visualScale = useTransform(scrollYProgress, [0, 1], [1, 0.96])
   useSeo({
     title: 'Teamworks | Creative Marketing Agency in Hyderabad',
     description: 'Teamworks is a creative agency in Hyderabad specializing in 3D walkthroughs, TVC films, AI innovation, branding, UI/UX design, and digital marketing.',
@@ -28,9 +38,9 @@ export default function Home() {
 
   return (
     <>
-      <section className="hero" aria-labelledby="hero-title">
+      <section className="hero" aria-labelledby="hero-title" ref={heroRef}>
         <div className="container hero-grid">
-          <motion.div className="hero-copy" initial={reduced ? false : 'hidden'} animate="show" variants={stagger}>
+          <motion.div className="hero-copy" style={reduced ? undefined : { y: copyY }} initial={reduced ? false : 'hidden'} animate="show" variants={stagger}>
             <TextReveal as="h1" id="hero-title" text="Ideas Beyond Imagination." className="hero-title" />
             <motion.p
               className="lead"
@@ -52,12 +62,14 @@ export default function Home() {
               Creative and digital agency in Hyderabad, building brands since {company.since}.
             </motion.p>
           </motion.div>
-          <motion.div
-            initial={reduced ? false : { opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.12, ease: easeOut }}
-          >
-            <HeroVisual />
+          <motion.div style={reduced ? undefined : { y: visualY, scale: visualScale }}>
+            <motion.div
+              initial={reduced ? false : { opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, delay: 0.12, ease: easeOut }}
+            >
+              <HeroVisual />
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -84,7 +96,7 @@ export default function Home() {
               {company.stats.map((s) => (
                 <div key={s.label}>
                   <dt>{s.label}</dt>
-                  <dd>{s.value}</dd>
+                  <dd><CountUp value={s.value} /></dd>
                 </div>
               ))}
             </dl>
@@ -106,8 +118,8 @@ export default function Home() {
             <Button to="/services" variant="ghost">All services</Button>
           </div>
           <div className="service-grid">
-            {services.map((s) => (
-              <ServiceCard key={s.slug} service={s} ratio="16 / 10" />
+            {services.map((s, index) => (
+              <ServiceCard key={s.slug} service={s} ratio="16 / 10" delay={index * 0.07} />
             ))}
           </div>
         </div>
@@ -123,8 +135,8 @@ export default function Home() {
             <Button to="/work" variant="ghost">View All Work</Button>
           </div>
           <div className="work-grid">
-            {projects.slice(0, 4).map((p) => (
-              <ProjectCard key={p.slug} project={p} ratio="16 / 10" />
+            {projects.slice(0, 4).map((p, index) => (
+              <ProjectCard key={p.slug} project={p} ratio="16 / 10" delay={index * 0.07} />
             ))}
           </div>
         </div>

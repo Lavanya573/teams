@@ -36,7 +36,7 @@ function FlavorArt({ slug }) {
   return null
 }
 
-export default function ServiceCard({ service, className = '', ratio = '16 / 10' }) {
+export default function ServiceCard({ service, className = '', ratio = '16 / 10', delay = 0 }) {
   const reduced = usePrefersReducedMotion()
   const fine = useFinePointer()
   const tiltRef = usePointerTilt(fine && !reduced, 5)
@@ -48,7 +48,7 @@ export default function ServiceCard({ service, className = '', ratio = '16 / 10'
       initial={reduced ? false : { opacity: 0, y: 24 }}
       whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.65, ease: easeOut }}
+      transition={{ duration: 0.65, delay, ease: easeOut }}
     >
       <Link to={`/services/${service.slug}`} className={`service-card ${className}`}>
         <div ref={tiltRef} className="service-tilt">

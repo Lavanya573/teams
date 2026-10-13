@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import { useSeo } from '../hooks/useSeo'
 import { company } from '../config/site'
 import { services } from '../data/services'
 import Button from '../components/Button'
 import TextReveal from '../components/TextReveal'
+import { easeOut, viewportOnce } from '../motion/variants'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 const ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT || '/api/contact'
 const budgets = ['Not sure yet', 'Under ₹1 lakh', '₹1–5 lakh', '₹5–15 lakh', '₹15 lakh and above']
@@ -12,6 +15,7 @@ const timelines = ['Flexible', 'Within a month', '1–3 months', '3+ months']
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 export default function Contact() {
+  const reduced = usePrefersReducedMotion()
   useSeo({
     title: 'Contact | Teamworks Creative Solutions',
     description: 'Start a project with Teamworks. Call, email or send a project enquiry to our Hyderabad team.',
@@ -83,29 +87,68 @@ export default function Contact() {
       <div className="container contact-grid">
         <div>
           <TextReveal as="h1" className="display" text="Let's Create Something Exceptional." />
-          <p className="lead">Tell us about your project and our team will get back to you with the right strategy.</p>
+          <motion.p
+            className="lead"
+            initial={reduced ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.2, ease: easeOut }}
+          >
+            Tell us about your project and our team will get back to you with the right strategy.
+          </motion.p>
 
-          <dl className="contact-list">
-            <div><dt>Email</dt><dd><a href={`mailto:${company.email}`}>{company.email}</a></dd></div>
-            <div><dt>Phone</dt><dd><a href={company.phoneHref}>{company.phone}</a></dd></div>
-            <div><dt>Studio</dt><dd>{company.address.map((l) => (<span key={l}>{l}<br /></span>))}</dd></div>
-            <div>
+          <motion.dl
+            className="contact-list"
+            initial={reduced ? false : 'hidden'}
+            animate="show"
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.08, delayChildren: 0.25 } },
+            }}
+          >
+            <motion.div variants={contactItemVariants}><dt>Email</dt><dd><a href={`mailto:${company.email}`}>{company.email}</a></dd></motion.div>
+            <motion.div variants={contactItemVariants}><dt>Phone</dt><dd><a href={company.phoneHref}>{company.phone}</a></dd></motion.div>
+            <motion.div variants={contactItemVariants}><dt>Studio</dt><dd>{company.address.map((l) => (<span key={l}>{l}<br /></span>))}</dd></motion.div>
+            <motion.div variants={contactItemVariants}>
               <dt>Follow</dt>
               <dd className="social-inline">
                 {company.social.map((s) => (<a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a>))}
               </dd>
-            </div>
-          </dl>
+            </motion.div>
+          </motion.dl>
         </div>
 
-        <div className="form-card">
-          {status === 'success' ? (
-            <div role="status" className="form-success">
-              <h2 className="h3">Thank you, {values.name.split(' ')[0] || 'there'}.</h2>
-              <p className="body-lg">Your enquiry has been sent. We will reply to {values.email} soon.</p>
-            </div>
-          ) : (
-            <form ref={formRef} onSubmit={onSubmit} noValidate aria-describedby={status === 'error' ? 'form-error' : undefined}>
+        <motion.div
+          className="form-card"
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, delay: 0.12, ease: easeOut }}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {status === 'success' ? (
+              <motion.div
+                key="success"
+                role="status"
+                className="form-success"
+                initial={reduced ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduced ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: 0.35, ease: easeOut }}
+              >
+                <h2 className="h3">Thank you, {values.name.split(' ')[0] || 'there'}.</h2>
+                <p className="body-lg">Your enquiry has been sent. We will reply to {values.email} soon.</p>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="form"
+                ref={formRef}
+                onSubmit={onSubmit}
+                noValidate
+                aria-describedby={status === 'error' ? 'form-error' : undefined}
+                initial={reduced ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduced ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: easeOut }}
+              >
               <div className="field">
                 <label htmlFor="name">Name <span aria-hidden="true">*</span></label>
                 <input type="text" autoComplete="name" required {...field('name')} />
@@ -164,10 +207,17 @@ export default function Contact() {
               </div>
 
               {status === 'error' && (
-                <p className="form-error" id="form-error" role="alert">
+                <motion.p
+                  className="form-error"
+                  id="form-error"
+                  role="alert"
+                  initial={reduced ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, ease: easeOut }}
+                >
                   We could not send your enquiry: {serverError}. Please try again, or email us at{' '}
                   <a href={`mailto:${company.email}`}>{company.email}</a> or call <a href={company.phoneHref}>{company.phone}</a>.
-                </p>
+                </motion.p>
               )}
 
               <Button type="submit" variant="primary" sweep disabled={status === 'submitting'}>
@@ -177,10 +227,16 @@ export default function Contact() {
                 By sending this form you agree that we may contact you about your enquiry. See our{' '}
                 <a href={company.external.privacy} target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
               </p>
-            </form>
-          )}
-        </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   )
+}
+
+const contactItemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeOut } },
 }

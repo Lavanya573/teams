@@ -38,14 +38,30 @@ export default function Work() {
         <div className="container">
           <div className="filters" role="group" aria-label="Filter work by category">
             {categories.map((c) => (
-              <button key={c} type="button" aria-pressed={active === c} onClick={() => choose(c)}>{c}</button>
+              <button
+                key={c}
+                type="button"
+                className={active === c && !reduced ? 'has-pill' : ''}
+                aria-pressed={active === c}
+                onClick={() => choose(c)}
+              >
+                {active === c && !reduced && (
+                  <motion.span
+                    className="filter-pill"
+                    layoutId="work-filter-pill"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    aria-hidden="true"
+                  />
+                )}
+                <span className="filter-label">{c}</span>
+              </button>
             ))}
           </div>
           <p className="sr-only" aria-live="polite">{list.length} project{list.length === 1 ? '' : 's'} shown</p>
 
           <motion.div layout={!reduced} className="work-grid work-grid-page">
             <AnimatePresence mode="popLayout">
-              {list.map((p) => (
+              {list.map((p, index) => (
                 <motion.div
                   key={p.slug}
                   layout={!reduced}
@@ -54,7 +70,7 @@ export default function Work() {
                   exit={reduced ? undefined : { opacity: 0, y: 8 }}
                   transition={{ duration: 0.32, ease: [0.2, 0.7, 0.2, 1] }}
                 >
-                  <ProjectCard project={p} ratio="16 / 10" />
+                  <ProjectCard project={p} ratio="16 / 10" delay={index * 0.04} />
                 </motion.div>
               ))}
             </AnimatePresence>

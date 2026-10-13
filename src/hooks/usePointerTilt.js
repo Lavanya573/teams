@@ -16,11 +16,15 @@ export function usePointerTilt(enabled = true, intensity = 6) {
         const x = (e.clientX - r.left) / r.width - 0.5
         const y = (e.clientY - r.top) / r.height - 0.5
         el.style.transform = `rotateX(${(-y * intensity).toFixed(2)}deg) rotateY(${(x * intensity).toFixed(2)}deg)`
+        el.style.setProperty('--pointer-x', `${((x + 0.5) * 100).toFixed(1)}%`)
+        el.style.setProperty('--pointer-y', `${((y + 0.5) * 100).toFixed(1)}%`)
       })
     }
     const reset = () => {
       cancelAnimationFrame(raf)
       el.style.transform = ''
+      el.style.removeProperty('--pointer-x')
+      el.style.removeProperty('--pointer-y')
     }
 
     el.addEventListener('pointermove', onMove)

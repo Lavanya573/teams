@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useSeo } from '../hooks/useSeo'
 import { company, asset, coreValues } from '../config/site'
@@ -9,8 +10,12 @@ import AboutProcess from '../components/AboutProcess'
 import TextReveal from '../components/TextReveal'
 import AnimatedSection from '../components/AnimatedSection'
 import ImageReveal from '../components/ImageReveal'
+import CountUp from '../components/CountUp'
+import { easeOut, viewportOnce } from '../motion/variants'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 export default function About() {
+  const reduced = usePrefersReducedMotion()
   useSeo({
     title: 'About Us | Teamworks Creative Solutions',
     description: 'Since 2001, Teamworks has helped businesses build impactful brands through creativity, strategy and innovation from Hyderabad.',
@@ -51,7 +56,7 @@ export default function About() {
           <h2 id="ab-numbers" className="h3 section-title">Teamworks in numbers</h2>
           <dl className="stat-row big">
             {company.stats.map((s) => (
-              <div key={s.label}><dt>{s.label}</dt><dd>{s.value}</dd></div>
+              <div key={s.label}><dt>{s.label}</dt><dd><CountUp value={s.value} /></dd></div>
             ))}
           </dl>
         </div>
@@ -76,14 +81,24 @@ export default function About() {
         <div className="container split">
           <div className="split-sticky"><h2 id="ab-timeline" className="h2">Our journey.</h2></div>
           <ol className="timeline">
-            <li>
+            <motion.li
+              initial={reduced ? false : { opacity: 0, x: 20 }}
+              whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.55, ease: easeOut }}
+            >
               <span className="year">{company.since}</span>
               <p>Teamworks begins helping businesses build impactful brands from Hyderabad.</p>
-            </li>
-            <li>
+            </motion.li>
+            <motion.li
+              initial={reduced ? false : { opacity: 0, x: 20 }}
+              whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.55, delay: 0.12, ease: easeOut }}
+            >
               <span className="year">Today</span>
               <p>A full-service creative and digital agency with 25+ years of experience, 1000+ projects delivered and 100+ global clients.</p>
-            </li>
+            </motion.li>
           </ol>
         </div>
       </AnimatedSection>
@@ -103,8 +118,16 @@ export default function About() {
         <div className="container">
           <h2 id="ab-cap" className="h2 section-title">Creative capabilities.</h2>
           <ul className="capability-list">
-            {services.map((s) => (
-              <li key={s.slug}><Link to={`/services/${s.slug}`}>{s.title}</Link></li>
+            {services.map((s, index) => (
+              <motion.li
+                key={s.slug}
+                initial={reduced ? false : { opacity: 0, y: 14 }}
+                whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+                viewport={viewportOnce}
+                transition={{ duration: 0.45, delay: index * 0.06, ease: easeOut }}
+              >
+                <Link to={`/services/${s.slug}`}>{s.title}</Link>
+              </motion.li>
             ))}
           </ul>
         </div>

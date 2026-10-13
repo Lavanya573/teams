@@ -387,6 +387,8 @@ code { background: var(--muted); padding: 2px 6px; border-radius: 6px; font-size
 .badge { position: absolute; left: 14px; top: 14px; background: #fff; color: var(--ink); font-size: 0.8rem; font-weight: 600; padding: 6px 12px; border-radius: 999px; z-index: 2; }
 .project-veil { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(17,17,17,.28)); opacity: 0; transition: opacity .4s var(--ease); }
 .project-card:hover .project-veil { opacity: 1; }
+.project-glare { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255,255,255,.3), transparent 42%); transition: opacity .3s var(--ease); }
+.project-card:hover .project-glare { opacity: 1; }
 .project-meta { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); padding-top: var(--s2); border-bottom: 1px solid var(--line); padding-bottom: var(--s2); }
 .project-meta h3 { transition: transform .35s var(--ease); }
 .project-card:hover .project-meta h3 { transform: translateX(3px); }
@@ -395,9 +397,12 @@ code { background: var(--muted); padding: 2px 6px; border-radius: 6px; font-size
 .project-card:hover .project-arrow { transform: translateX(4px); }
 @media (max-width: 760px) { .work-grid { grid-template-columns: 1fr; } .work-grid > :nth-child(even), .work-grid-page > :nth-child(even) { margin-top: 0; } }
 .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: var(--s5); }
-.filters button { min-height: 44px; padding: 0 20px; border-radius: 999px; background: #fff; border: 1px solid #d6d6d6; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all .2s var(--ease); }
+.filters button { position: relative; min-height: 44px; padding: 0 20px; border-radius: 999px; background: #fff; border: 1px solid #d6d6d6; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all .2s var(--ease); }
 .filters button:hover { border-color: var(--ink); }
 .filters button[aria-pressed='true'] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.filters button.has-pill { background: transparent; }
+.filter-pill { position: absolute; inset: -1px; z-index: 0; border-radius: inherit; background: var(--ink); }
+.filter-label { position: relative; z-index: 1; }
 
 /* Process */
 .process-list { display: grid; }
